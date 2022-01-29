@@ -26,9 +26,11 @@
 .news-img-size{
     max-width: 100%;
     max-height: 250px;
+    margin-bottom: 1rem;
 }
 .news{
-    margin-top: 1rem;
+    margin: 1rem;
+    
     border-bottom: 3px solid black;
 }
 /* 모바일 햄버거 메뉴 및 검색 */

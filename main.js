@@ -18,6 +18,52 @@ const getLatesNews = async () => {
 };
 
 getLatesNews();
+let btnMenus = document.querySelectorAll(".menus button")
+btnMenus.forEach((menus) => menus.addEventListener("click",(event)=> getNewByTopic(event) ));
+
+const getNewByTopic = async(event) =>{
+    console.log(event.target.textContent);
+    let topic = event.target.textContent.toLowerCase();
+    let url = new URL(
+        `https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&page_size=10&topic=${topic}`
+    );
+    let header = new Headers({
+        "x-api-key": "RXXn8l8Gh869EmgoqqCdGYYZf4yaZujLFvBlFgeaTt0",
+      });
+    let response = await fetch(url, { headers: header }); // 데이터보내는방식은 ajax, http, fetch 등이 있음
+    let data = await response.json();
+    news = data.articles;
+
+    render();
+}
+
+let btnSearch = document.getElementById("search-btn");
+let searchInput = document.getElementById("search-input");
+searchInput.addEventListener("keyup", function (event) {
+    if (event.keyCode === 13) {
+        getNewBySearch();
+    }
+  });
+
+const getNewBySearch = async() =>{
+    let search = searchInput.value;
+    console.log(search)
+
+    let url = new URL (
+        `https://api.newscatcherapi.com/v2/search?q=${search}&page_size=10`
+    );
+    let header = new Headers({
+        "x-api-key": "RXXn8l8Gh869EmgoqqCdGYYZf4yaZujLFvBlFgeaTt0",
+      });
+    let response = await fetch(url, { headers: header }); // 데이터보내는방식은 ajax, http, fetch 등이 있음
+    let data = await response.json();
+    news = data.articles;
+
+    render();
+}
+
+btnSearch.addEventListener("click",getNewBySearch);
+
 const render= () => {
     let newsHTML = "";
     newsHTML = news
