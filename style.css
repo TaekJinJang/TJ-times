@@ -88,3 +88,12 @@
 .icon-button{
     margin: 1rem;
 }
+.search-error{
+    height: 3rem;
+    text-align: center;
+    background-color: rgb(236, 204, 215);
+    color: rgb(230, 136, 201);
+    font-style: italic;
+    font-weight: bold;
+    font-size:larger
+}
