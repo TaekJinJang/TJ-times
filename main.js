@@ -1,11 +1,14 @@
 let news = [];
 let url;
-
+let page = 1;
+let total_pages = 0;
 const getNews = async () => {
   try {
     let header = new Headers({
       "x-api-key": "RXXn8l8Gh869EmgoqqCdGYYZf4yaZujLFvBlFgeaTt0",
     });
+    url.searchParams.set('page', page);
+    console.log(url);
     let response = await fetch(url, { headers: header }); // 데이터보내는방식은 ajax, http, fetch 등이 있음
     let data = await response.json();
     if (response.status == 200) {
@@ -13,9 +16,12 @@ const getNews = async () => {
         throw new Error ("검색한 내용을 찾을 수 없습니다.");
       }
       news = data.articles;
+      total_pages = data.total_pages;
+      page = data.page;
       console.log("response=", response);
       console.log("data", data);
       render();
+     pagenation();
     } else {
       throw new Error(data.message);
     }
@@ -27,7 +33,7 @@ const getNews = async () => {
 
 const getLatesNews = async () => {
   url = new URL(
-    "https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&topic=food&page_size=10"
+    "https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&page_size=5"
   );
   getNews();
 };
@@ -42,7 +48,7 @@ const getNewByTopic = async (event) => {
   console.log(event.target.textContent);
   let topic = event.target.textContent.toLowerCase();
   url = new URL(
-    `https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&page_size=10&topic=${topic}`
+    `https://api.newscatcherapi.com/v2/latest_headlines?countries=KR&page_size=5&topic=${topic}`
   );
   getNews();
 };
@@ -61,7 +67,7 @@ const getNewBySearch = async () => {
   console.log(search);
 
   url = new URL(
-    `https://api.newscatcherapi.com/v2/search?q=${search}&page_size=10`
+    `https://api.newscatcherapi.com/v2/search?q=${search}&page_size=5`
   );
   getNews();
 };
@@ -121,3 +127,45 @@ const errorRender = (message) => {
 </div>`;
   document.getElementById("news-board").innerHTML = errorHTML;
 };
+
+const pagenation = () => {
+  let pagenationHTML = `<li class="page-item">
+  <a class="page-link" href="#" aria-label="Previous" onclick = "moveToPage(1)">
+    <span aria-hidden="true">&laquo;</span>
+  </a>
+</li>
+<li class="page-item">
+  <a class="page-link" href="#" aria-label="Previous" onclick = "moveToPage(${page-1})">
+    <span aria-hidden="true">&lt;</span>
+  </a>
+</li>`
+  // total_page
+  // page
+  // first,last 변수 만들어야 함
+  let pageGroup = Math.ceil(page/5)
+  let last = pageGroup*5;
+  let first = last-4;
+
+  for(let i=first;i<=last;i++){
+    pagenationHTML += `        
+  <li class="page-item ${page==i? "active" : ""}"><a class="page-link" href="#" onclick = "moveToPage(${i})">${i}</a></li>`;
+  }
+  pagenationHTML += `<li class="page-item">
+  <a class="page-link" href="#" aria-label="Next" onclick = "moveToPage(${page+1})">
+    <span aria-hidden="true">&gt;</span>
+  </a>
+  </li><li class="page-item">
+  <a class="page-link" href="#" aria-label="Next" onclick = "moveToPage(${total_pages})">
+    <span aria-hidden="true">&raquo;</span>
+  </a>
+</li>`
+document.querySelector(".pagination").innerHTML = pagenationHTML;
+}
+
+const moveToPage = (pageNum) => {
+  // 1. 이동할 페이지를 안다
+  page = pageNum;
+  // 2. 이동할 페이지를 가지고 api를 다시 호출한다
+  getNews();
+  // 3. 
+}
