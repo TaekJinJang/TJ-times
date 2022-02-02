@@ -7,13 +7,13 @@ const getNews = async () => {
     let header = new Headers({
       "x-api-key": "RXXn8l8Gh869EmgoqqCdGYYZf4yaZujLFvBlFgeaTt0",
     });
-    url.searchParams.set('page', page);
+    url.searchParams.set("page", page);
     console.log(url);
     let response = await fetch(url, { headers: header }); // 데이터보내는방식은 ajax, http, fetch 등이 있음
     let data = await response.json();
     if (response.status == 200) {
       if (data.total_hits == 0) {
-        throw new Error ("검색한 내용을 찾을 수 없습니다.");
+        throw new Error("검색한 내용을 찾을 수 없습니다.");
       }
       news = data.articles;
       total_pages = data.total_pages;
@@ -21,7 +21,7 @@ const getNews = async () => {
       console.log("response=", response);
       console.log("data", data);
       render();
-     pagenation();
+      pagenation();
     } else {
       throw new Error(data.message);
     }
@@ -135,37 +135,50 @@ const pagenation = () => {
   </a>
 </li>
 <li class="page-item">
-  <a class="page-link" href="#" aria-label="Previous" onclick = "moveToPage(${page-1})">
+  <a class="page-link" href="#" aria-label="Previous" onclick = "moveToPage(${
+    page - 1
+  })">
     <span aria-hidden="true">&lt;</span>
   </a>
-</li>`
+</li>`;
   // total_page
   // page
   // first,last 변수 만들어야 함
-  let pageGroup = Math.ceil(page/5)
-  let last = pageGroup*5;
-  let first = last-4;
+  let pageGroup = Math.ceil(page / 5);
+  console.log(pageGroup);
+  let last = pageGroup * 5;
+  let first = last - 4 <= 0 ? 1: last - 4;
+  if (last > total_pages){ last = total_pages}
 
-  for(let i=first;i<=last;i++){
-    pagenationHTML += `        
-  <li class="page-item ${page==i? "active" : ""}"><a class="page-link" href="#" onclick = "moveToPage(${i})">${i}</a></li>`;
+  if (pageGroup == 1) {
+    pagenationHTML = "";
   }
-  pagenationHTML += `<li class="page-item">
-  <a class="page-link" href="#" aria-label="Next" onclick = "moveToPage(${page+1})">
+  for (let i = first; i <= last; i++) {
+    pagenationHTML += `        
+  <li class="page-item ${
+    page == i ? "active" : ""
+  }"><a class="page-link" href="#" onclick = "moveToPage(${i})">${i}</a></li>`;
+  }
+  if (last < total_pages) {
+    pagenationHTML += `<li class="page-item">
+  <a class="page-link" href="#" aria-label="Next" onclick = "moveToPage(${
+    page + 1
+  })">
     <span aria-hidden="true">&gt;</span>
   </a>
   </li><li class="page-item">
   <a class="page-link" href="#" aria-label="Next" onclick = "moveToPage(${total_pages})">
     <span aria-hidden="true">&raquo;</span>
   </a>
-</li>`
-document.querySelector(".pagination").innerHTML = pagenationHTML;
-}
+</li>`;
+  }
 
+  document.querySelector(".pagination").innerHTML = pagenationHTML;
+};
 const moveToPage = (pageNum) => {
   // 1. 이동할 페이지를 안다
   page = pageNum;
   // 2. 이동할 페이지를 가지고 api를 다시 호출한다
   getNews();
-  // 3. 
-}
+  // 3.
+};
